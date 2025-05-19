@@ -11,6 +11,6 @@ AutoRecon is a Python-based automated reconnaissance tool for bug bounty hunters
 ## Usage
 
 ```bash
-git clone https://github.com/yourusername/autorecon.git
+git clone https://github.com/mariyfareed/autorecon.git
 cd autorecon
 python autorecon.py -d example.com --full
