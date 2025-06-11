@@ -1,0 +1,17 @@
+[project]
+name = "autorecon"
+version = "0.1.0"
+description = "A custom Python CLI tool for advanced reconnaissance and scanning"
+authors = [
+    { name="Mariya Fareed", email="you@example.com" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = []
+
+[project.scripts]
+autorecon = "autorecon.cli:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
