@@ -1,4 +1,5 @@
 import requests
+from autorecon.core.waf_identification import identify_waf
 
 def identify_waf(target_url):
     print(f"\n[+] Starting WAF Detection on {target_url}")
@@ -20,3 +21,11 @@ def identify_waf(target_url):
 
     except requests.RequestException as e:
         print(f"[-] Error during WAF detection: {e}")
+
+    def add_waf_subparser(subparsers):
+        parser = subparsers.add_parser("waf", help="Detect WAF on target")
+        parser.add_argument("url", help="Target URL")
+        parser.set_defaults(func=handle_waf)
+
+    def handle_waf(args):
+        identify_waf(args.url)

@@ -4,6 +4,7 @@ from urllib.parse import urljoin, urlparse
 import re
 import warnings
 warnings.filterwarnings("ignore")
+from autorecon.core.web_recon import web_recon
 
 def web_recon(target_url):
     print(f"\n[+] Starting Web Recon on {target_url}")
@@ -43,29 +44,37 @@ def web_recon(target_url):
             if r.status_code in [200, 401, 403]:
                 print(f"    Possible Panel: {full} [{r.status_code}]")
 
+        print("[+] Detecting technologies from headers...")
+        tech_stack = []
+        server = headers.get("Server", "")
+        powered_by = headers.get("X-Powered-By", "")
+        content_type = headers.get("Content-Type", "")
+
+        if "apache" in server.lower():
+            tech_stack.append("Apache")
+        if "nginx" in server.lower():
+            tech_stack.append("Nginx")
+        if "php" in powered_by.lower():
+            tech_stack.append("PHP")
+        if "asp" in powered_by.lower():
+            tech_stack.append("ASP.NET")
+        if "application/json" in content_type:
+            tech_stack.append("JSON API")
+
+        if tech_stack:
+            print(f"    Identified Technologies: {', '.join(tech_stack)}")
+        else:
+            print("    No identifiable technologies via headers.")
+
     except requests.RequestException as e:
         print(f"[-] Error during web recon: {e}")
 
 
-# -------- core/waf_identification.py --------
-def identify_waf(target_url):
-    print(f"\n[+] Starting WAF Detection on {target_url}")
-    try:
-        headers = requests.get(target_url, timeout=10, verify=False).headers
-        waf_indicators = [
-            "X-Sucuri-ID", "X-CDN", "X-Cache", "Server", "CF-RAY", "X-Akamai",
-            "X-Powered-By", "X-FireEye", "X-Imperva", "X-WAF", "X-Distil-CS"
-        ]
-        for header in waf_indicators:
-            if header in headers:
-                print(f"    Detected WAF-related header: {header} -> {headers[header]}")
+    def add_webrecon_subparser(subparsers):
+        parser = subparsers.add_parser("webrecon", help="Perform web recon / footprinting")
+        parser.add_argument("url", help="Target URL")
+        parser.set_defaults(func=handle_webrecon)
 
-        print("[+] Sending WAF test payload...")
-        test_url = f"{target_url}?q=<script>alert('x')</script>"
-        r = requests.get(test_url, timeout=10, verify=False)
-        if r.status_code in [403, 406, 501] or "waf" in r.text.lower():
-            print("    WAF likely present based on response to malicious input")
-
-    except requests.RequestException as e:
-        print(f"[-] Error during WAF detection: {e}")
-
+    def handle_webrecon(args):
+        web_recon(args.url)
+    

