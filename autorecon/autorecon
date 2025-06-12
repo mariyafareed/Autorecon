@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+import argparse
+from autorecon.commands import scan
+
+
+def main():
+    parser = argparse.ArgumentParser(prog='autorecon', description='AutoRecon CLI Tool')
+    subparsers = parser.add_subparsers(dest='command')
+
+    # Subcommand: scan
+    scan_parser = subparsers.add_parser('scan', help='Port scanning')
+    scan_parser.add_argument('-u', '--url', required=True, help='Target domain or IP')
+    scan_parser.add_argument('-p', '--ports', help='Comma-separated or dash range ports (e.g. 80,443 or 1-100)')
+    scan_parser.add_argument('--top-ports', type=int, help='Scan top N common ports')
+    scan_parser.add_argument('--all-ports', action='store_true', help='Scan all 65535 ports')
+    scan_parser.add_argument('-T', '--timing', type=int, choices=range(0, 6), help='Scan timing (T0-T5)')
+    scan_parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output with banner grabbing')
+    scan_parser.set_defaults(func=scan.run)
+
+    args = parser.parse_args()
+    if hasattr(args, 'func'):
+        args.func(args)
+    else:
+        parser.print_help()
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,22 @@
+import requests
+
+def identify_waf(target_url):
+    print(f"\n[+] Starting WAF Detection on {target_url}")
+    try:
+        headers = requests.get(target_url, timeout=10, verify=False).headers
+        waf_indicators = [
+            "X-Sucuri-ID", "X-CDN", "X-Cache", "Server", "CF-RAY", "X-Akamai",
+            "X-Powered-By", "X-FireEye", "X-Imperva", "X-WAF", "X-Distil-CS"
+        ]
+        for header in waf_indicators:
+            if header in headers:
+                print(f"    Detected WAF-related header: {header} -> {headers[header]}")
+
+        print("[+] Sending WAF test payload...")
+        test_url = f"{target_url}?q=<script>alert('x')</script>"
+        r = requests.get(test_url, timeout=10, verify=False)
+        if r.status_code in [403, 406, 501] or "waf" in r.text.lower():
+            print("    WAF likely present based on response to malicious input")
+
+    except requests.RequestException as e:
+        print(f"[-] Error during WAF detection: {e}")

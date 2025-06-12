@@ -56,3 +56,4 @@ def github_dorks(domain):
             time.sleep(1)
         except Exception as e:
             print(f"  [\u2717] GitHub dorking error: {e}")
+

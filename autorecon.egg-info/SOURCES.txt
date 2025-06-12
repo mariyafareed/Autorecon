@@ -1,3 +1,4 @@
+README.md
 pyproject.toml
 autorecon/__init__.py
 autorecon/cli.py
@@ -9,7 +10,11 @@ autorecon.egg-info/top_level.txt
 autorecon/commands/__init__.py
 autorecon/commands/scan.py
 autorecon/core/__init__.py
+autorecon/core/fuzzer.py
+autorecon/core/osint.py
 autorecon/core/port_scanner.py
 autorecon/core/ssl_analysis.py
 autorecon/core/utils.py
+autorecon/core/waf_identification.py
+autorecon/core/web_recon.py
 autorecon/core/utils/__init__.py
